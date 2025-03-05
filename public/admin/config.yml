@@ -2,7 +2,7 @@ backend:
   name: github
   repo: ixujue/mysite
   branch: main
-  base_url: https://decap-cms-github-oauth-api.ixujue.workers.dev/
+  base_url: https://www.365121.xyz/admin
   auth_endpoint: /auth
 
 media_folder: "public/uploads"
