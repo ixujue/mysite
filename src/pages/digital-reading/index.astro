@@ -1,0 +1,111 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../../components/FormattedDate.astro';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+).filter(post => post.data.categories?.includes('digital-reading'));
+
+const categories = [
+  { name: '科技前沿', slug: 'tech' },
+  { name: '文学经典', slug: 'literature' },
+  { name: '学术专著', slug: 'academic' },
+  { name: '外语学习', slug: 'language' },
+  { name: '名著朗读', slug: 'audiobook' }
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title="数字阅读 | {SITE_TITLE}" description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="category-header">
+				<h1>数字阅读</h1>
+				<div class="category-nav">
+					{categories.map(category => (
+						<a href={`/digital-reading/${category.slug}`} class="category-link">
+							{category.name}
+						</a>
+					))}
+				</div>
+			</section>
+
+			<section class="posts-grid">
+				<ul>
+					{posts.map((post) => (
+						<li>
+							<a href={`/blog/${post.id}/`}>
+								<img width={720} height={360} src={post.data.heroImage} alt="" />
+								<h4 class="title">{post.data.title}</h4>
+								<p class="date">
+									<FormattedDate date={post.data.pubDate} />
+								</p>
+							</a>
+						</li>
+					))}
+				</ul>
+			</section>
+		</main>
+		<style>
+			main {
+				width: 960px;
+				max-width: calc(100% - 2em);
+				margin: 0 auto;
+				padding: 3em 1em;
+			}
+			.category-header {
+				text-align: center;
+				margin-bottom: 2em;
+			}
+			.category-nav {
+				display: flex;
+				justify-content: center;
+				gap: 1em;
+				margin-top: 1em;
+			}
+			.category-link {
+				padding: 0.5em 1em;
+				border-radius: 8px;
+				background: #f4f4f4;
+				color: #666;
+				text-decoration: none;
+				transition: all 0.2s ease;
+			}
+			.category-link:hover {
+				background: #333;
+				color: #fff;
+			}
+			.posts-grid ul {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+				gap: 2em;
+				padding: 0;
+				list-style: none;
+			}
+			.posts-grid img {
+				width: 100%;
+				height: auto;
+				border-radius: 12px;
+				margin-bottom: 0.5em;
+			}
+			.title {
+				margin: 0;
+				color: rgb(var(--black));
+				line-height: 1.4;
+			}
+			.date {
+				margin: 0;
+				color: rgb(var(--gray));
+			}
+		</style>
+		<Footer />
+	</body>
+</html>

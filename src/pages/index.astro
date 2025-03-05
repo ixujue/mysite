@@ -74,8 +74,17 @@ const popularPosts = posts.slice(0, 5).map(post => ({
 			</div>
 			<div class="main-content">
 				<div class="content-area">
-					<h2>最新文章</h2>
-					<section class="posts-grid">
+					<section class="content-area">
+					  <div class="tags-nav">
+					    <a href="/" class="tag-link active">全部</a>
+					    <a href="/tags/digital" class="tag-link">数字生活</a>
+					    <a href="/tags/productivity" class="tag-link">生产力</a>
+					    <a href="/tags/software" class="tag-link">软件应用</a>
+					    <a href="/tags/creativity" class="tag-link">创意设计</a>
+					  </div>
+					  <section>
+					    <h2>最新文章</h2>
+					    <ul class="posts-grid">
 				<ul>
 					{
 						posts.map((post) => (
@@ -98,7 +107,10 @@ const popularPosts = posts.slice(0, 5).map(post => ({
 		</main>
 		<style>
 			main {
+				width: 100%;
+				max-width: 100%;
 				margin: 0 auto;
+				padding: 0;
 			}
 			.main-content {
 				display: grid;
@@ -117,9 +129,11 @@ const popularPosts = posts.slice(0, 5).map(post => ({
 				display: grid;
 				grid-template-columns: repeat(4, 1fr);
 				gap: 1.5rem;
-				margin: 2rem auto;
+				margin: -55px auto 2rem;
 				max-width: 1120px;
-				padding: 0
+				padding: 0 2rem;
+				position: relative;
+				z-index: 10;
 			}
 			
 			.feature-item {
@@ -127,19 +141,20 @@ const popularPosts = posts.slice(0, 5).map(post => ({
 				display: block;
 				border-radius: 12px;
 				overflow: hidden;
-				box-shadow: var(--box-shadow);
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 				transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+				background-color: #fff;
+				height: 100%; /* 确保整个项目高度一致 */
 			}
 			
 			.feature-item:hover {
 				transform: translateY(-5px);
-				box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 			}
 			
 			.feature-image-container {
 				width: 100%;
-				height: 0;
-				padding-bottom: 56.25%; /* 16:9 比例 */
+				padding-top: 54.72%; /* 保持 265:145 的宽高比 */
 				position: relative;
 				overflow: hidden;
 			}
@@ -164,6 +179,11 @@ const popularPosts = posts.slice(0, 5).map(post => ({
 			@media (max-width: 768px) {
 				.feature-links {
 					grid-template-columns: repeat(2, 1fr);
+					max-width: 600px;
+					margin: 1rem auto;
+				}
+				.feature-image-container {
+					width: 100%;
 				}
 			}
 			.content-area h2 {
@@ -180,18 +200,75 @@ const popularPosts = posts.slice(0, 5).map(post => ({
 				margin: 0;
 				padding: 0;
 			}
-			ul li * {
+			ul li {
+				margin-bottom: 2rem;
+			}
+			ul li a {
+				display: grid;
+				grid-template-columns: 240px 1fr;
+				gap: 1.5rem;
 				text-decoration: none;
-				transition: 0.2s ease;
+				transition: all 0.3s ease;
+			}
+			ul li img {
+				width: 100%;
+				height: 180px;
+				object-fit: cover;
+				border-radius: 12px;
+				transition: transform 0.3s ease;
 			}
 			ul li:first-child {
 				grid-column: 1 / -1;
 			}
+			ul li:first-child a {
+				grid-template-columns: 1fr 1fr;
+			}
 			ul li:first-child img {
-				width: 100%;
+				height: 360px;
 			}
 			ul li:first-child .title {
-				font-size: 2.369rem;
+				font-size: 2rem;
+			}
+			.title {
+				margin: 0 0 0.5rem;
+				color: rgb(var(--black));
+				line-height: 1.4;
+				transition: transform 0.3s ease;
+			}
+			.date {
+				margin: 0;
+				color: rgb(var(--gray));
+			}
+			ul li a:hover img {
+				transform: scale(1.05);
+			}
+			ul li a:hover .title {
+				transform: translateX(-10px);
+				color: rgb(var(--accent));
+			}
+			@media (max-width: 768px) {
+				.posts-grid {
+					grid-template-columns: 1fr;
+				}
+				ul li a {
+					grid-template-columns: 1fr;
+					gap: 1rem;
+				}
+				ul li:first-child a {
+					grid-template-columns: 1fr;
+				}
+				ul li img {
+					height: 200px;
+				}
+				ul li:first-child img {
+					height: 200px;
+				}
+				ul li:first-child .title {
+					font-size: 1.5rem;
+				}
+			}
+			ul li:first-child .title {
+				font-size: 1.5rem;
 			}
 			ul li img {
 				margin-bottom: 0.5rem;

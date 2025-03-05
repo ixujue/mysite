@@ -1,0 +1,148 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../../components/FormattedDate.astro';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+).filter(post => post.data.categories?.includes('creative'));
+
+const categories = [
+  { name: 'UI套件', slug: 'ui' },
+  { name: '摄影图库', slug: 'photo' },
+  { name: '矢量插画', slug: 'illustration' },
+  { name: '音效素材', slug: 'audio' },
+  { name: '视频模板', slug: 'video' }
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title="创意素材 | {SITE_TITLE}" description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="category-header">
+				<h1>创意素材</h1>
+				<div class="category-nav">
+					{categories.map(category => (
+						<a href={`/creative/${category.slug}`} class="category-link">
+							{category.name}
+						</a>
+					))}
+				</div>
+			</section>
+
+			<section class="resource-grid">
+				{posts.map((post) => (
+					<div class="resource-card">
+						<a href={`/blog/${post.id}/`}>
+							<div class="resource-preview">
+								<img src={post.data.heroImage} alt={post.data.title} />
+							</div>
+							<div class="resource-info">
+								<h3>{post.data.title}</h3>
+								<p class="description">{post.data.description}</p>
+								<div class="meta">
+									<span class="date"><FormattedDate date={post.data.pubDate} /></span>
+								</div>
+							</div>
+						</a>
+					</div>
+				))}
+			</section>
+		</main>
+		<style>
+			main {
+				width: 100%;
+				max-width: 1400px;
+				margin: 0 auto;
+				padding: 3em 1em;
+			}
+			.category-header {
+				text-align: center;
+				margin-bottom: 3em;
+			}
+			.category-nav {
+				display: flex;
+				justify-content: center;
+				gap: 1em;
+				margin-top: 1em;
+				flex-wrap: wrap;
+			}
+			.category-link {
+				padding: 0.5em 1em;
+				border-radius: 8px;
+				background: #f4f4f4;
+				color: #666;
+				text-decoration: none;
+				transition: all 0.2s ease;
+			}
+			.category-link:hover {
+				background: #333;
+				color: #fff;
+			}
+			.resource-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+				gap: 2em;
+				padding: 1em;
+			}
+			.resource-card {
+				border-radius: 12px;
+				overflow: hidden;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+				transition: transform 0.3s ease;
+				background: #fff;
+			}
+			.resource-card:hover {
+				transform: translateY(-5px);
+				box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+			}
+			.resource-preview {
+				position: relative;
+				padding-top: 56.25%;
+				overflow: hidden;
+			}
+			.resource-preview img {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+			}
+			.resource-info {
+				padding: 1.5em;
+			}
+			.resource-info h3 {
+				margin: 0;
+				font-size: 1.2em;
+				color: rgb(var(--black));
+				line-height: 1.4;
+			}
+			.description {
+				margin: 0.8em 0;
+				font-size: 0.9em;
+				color: rgb(var(--gray));
+				line-height: 1.6;
+			}
+			.meta {
+				margin-top: 1em;
+				font-size: 0.8em;
+				color: rgb(var(--gray));
+			}
+			@media (max-width: 768px) {
+				.resource-grid {
+					grid-template-columns: 1fr;
+				}
+			}
+		</style>
+		<Footer />
+	</body>
+</html>

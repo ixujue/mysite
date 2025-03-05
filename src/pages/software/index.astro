@@ -1,0 +1,148 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../../components/FormattedDate.astro';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+).filter(post => post.data.categories?.includes('software'));
+
+const categories = [
+  { name: '开发工具', slug: 'dev-tools' },
+  { name: '生产力工具', slug: 'productivity' },
+  { name: '系统工具', slug: 'system' },
+  { name: '设计工具', slug: 'design' },
+  { name: '安全工具', slug: 'security' }
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title="软件工坊 | {SITE_TITLE}" description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="category-header">
+				<h1>软件工坊</h1>
+				<div class="category-nav">
+					{categories.map(category => (
+						<a href={`/software/${category.slug}`} class="category-link">
+							{category.name}
+						</a>
+					))}
+				</div>
+			</section>
+
+			<section class="software-grid">
+				{posts.map((post) => (
+					<div class="software-card">
+						<a href={`/blog/${post.id}/`}>
+							<div class="software-preview">
+								<img src={post.data.heroImage} alt={post.data.title} />
+							</div>
+							<div class="software-info">
+								<h3>{post.data.title}</h3>
+								<p class="description">{post.data.description}</p>
+								<div class="meta">
+									<span class="date"><FormattedDate date={post.data.pubDate} /></span>
+								</div>
+							</div>
+						</a>
+					</div>
+				))}
+			</section>
+		</main>
+		<style>
+			main {
+				width: 100%;
+				max-width: 1400px;
+				margin: 0 auto;
+				padding: 3em 1em;
+			}
+			.category-header {
+				text-align: center;
+				margin-bottom: 3em;
+			}
+			.category-nav {
+				display: flex;
+				justify-content: center;
+				gap: 1em;
+				margin-top: 1em;
+				flex-wrap: wrap;
+			}
+			.category-link {
+				padding: 0.5em 1em;
+				border-radius: 8px;
+				background: #f4f4f4;
+				color: #666;
+				text-decoration: none;
+				transition: all 0.2s ease;
+			}
+			.category-link:hover {
+				background: #333;
+				color: #fff;
+			}
+			.software-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+				gap: 2em;
+				padding: 1em;
+			}
+			.software-card {
+				border-radius: 12px;
+				overflow: hidden;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+				transition: transform 0.3s ease;
+				background: #fff;
+			}
+			.software-card:hover {
+				transform: translateY(-5px);
+				box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+			}
+			.software-preview {
+				position: relative;
+				padding-top: 56.25%;
+				overflow: hidden;
+			}
+			.software-preview img {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+			}
+			.software-info {
+				padding: 1.5em;
+			}
+			.software-info h3 {
+				margin: 0;
+				font-size: 1.2em;
+				color: rgb(var(--black));
+				line-height: 1.4;
+			}
+			.description {
+				margin: 0.8em 0;
+				font-size: 0.9em;
+				color: rgb(var(--gray));
+				line-height: 1.6;
+			}
+			.meta {
+				margin-top: 1em;
+				font-size: 0.8em;
+				color: rgb(var(--gray));
+			}
+			@media (max-width: 768px) {
+				.software-grid {
+					grid-template-columns: 1fr;
+				}
+			}
+		</style>
+		<Footer />
+	</body>
+</html>

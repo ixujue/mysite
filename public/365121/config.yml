@@ -13,8 +13,72 @@ locale: 'zh_Hans'
 display_url: https://www.365121.xyz/365121
 
 collections:
-  - name: "resources"
-    label: "资源"
+  - name: "digital-reading"
+    label: "数字阅读"
+    folder: "src/content/digital-reading"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "标题", name: "title", widget: "string" }
+      - { label: "描述", name: "description", widget: "text" }
+      - { label: "发布日期", name: "pubDate", widget: "datetime", format: "YYYY-MM-DD" }
+      - { label: "封面图", name: "heroImage", widget: "image" }
+      - { label: "分类", name: "categories", widget: "list", default: ["digital-reading"] }
+      - { label: "子分类", name: "subcategory", widget: "select", options: ["电子书", "有声读物", "知识付费", "杂志期刊", "学术论文"] }
+      - { label: "标签", name: "tags", widget: "select", multiple: true, options: ["前端", "后端", "设计", "运维", "数据库", "人工智能", "区块链", "移动开发", "游戏开发", "云计算", "网络安全", "开源项目", "编程语言", "架构设计", "性能优化", "测试", "DevOps", "微服务", "容器化", "serverless"], allow_add: true }
+      - { label: "下载链接", name: "downloadLink", widget: "string" }
+      - { label: "资源介绍", name: "body", widget: "markdown" }
+
+  - name: "education"
+    label: "教育赋能"
+    folder: "src/content/education"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "标题", name: "title", widget: "string" }
+      - { label: "描述", name: "description", widget: "text" }
+      - { label: "发布日期", name: "pubDate", widget: "datetime", format: "YYYY-MM-DD" }
+      - { label: "封面图", name: "heroImage", widget: "image" }
+      - { label: "分类", name: "categories", widget: "list", default: ["education"] }
+      - { label: "子分类", name: "subcategory", widget: "select", options: ["编程开发", "设计创作", "职业技能", "考试认证", "语言学习"] }
+      - { label: "标签", name: "tags", widget: "select", multiple: true, options: ["前端", "后端", "设计", "运维", "数据库", "人工智能", "区块链", "移动开发", "游戏开发", "云计算", "网络安全", "开源项目", "编程语言", "架构设计", "性能优化", "测试", "DevOps", "微服务", "容器化", "serverless"], allow_add: true }
+      - { label: "下载链接", name: "downloadLink", widget: "string" }
+      - { label: "资源介绍", name: "body", widget: "markdown" }
+
+  - name: "creative"
+    label: "创意素材"
+    folder: "src/content/creative"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "标题", name: "title", widget: "string" }
+      - { label: "描述", name: "description", widget: "text" }
+      - { label: "发布日期", name: "pubDate", widget: "datetime", format: "YYYY-MM-DD" }
+      - { label: "封面图", name: "heroImage", widget: "image" }
+      - { label: "分类", name: "categories", widget: "list", default: ["creative"] }
+      - { label: "子分类", name: "subcategory", widget: "select", options: ["UI套件", "摄影图库", "矢量插画", "音效素材", "视频模板"] }
+      - { label: "标签", name: "tags", widget: "select", multiple: true, options: ["前端", "后端", "设计", "运维", "数据库", "人工智能", "区块链", "移动开发", "游戏开发", "云计算", "网络安全", "开源项目", "编程语言", "架构设计", "性能优化", "测试", "DevOps", "微服务", "容器化", "serverless"], allow_add: true }
+      - { label: "下载链接", name: "downloadLink", widget: "string" }
+      - { label: "资源介绍", name: "body", widget: "markdown" }
+
+  - name: "software"
+    label: "软件工坊"
+    folder: "src/content/software"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "标题", name: "title", widget: "string" }
+      - { label: "描述", name: "description", widget: "text" }
+      - { label: "发布日期", name: "pubDate", widget: "datetime", format: "YYYY-MM-DD" }
+      - { label: "封面图", name: "heroImage", widget: "image" }
+      - { label: "分类", name: "categories", widget: "list", default: ["software"] }
+      - { label: "子分类", name: "subcategory", widget: "select", options: ["开发工具", "生产力工具", "系统工具", "设计工具", "安全工具"] }
+      - { label: "标签", name: "tags", widget: "select", multiple: true, options: ["前端", "后端", "设计", "运维", "数据库", "人工智能", "区块链", "移动开发", "游戏开发", "云计算", "网络安全", "开源项目", "编程语言", "架构设计", "性能优化", "测试", "DevOps", "微服务", "容器化", "serverless"], allow_add: true }
+      - { label: "下载链接", name: "downloadLink", widget: "string" }
+      - { label: "资源介绍", name: "body", widget: "markdown" }
+
+  - name: "blog"
+    label: "博客文章"
     folder: "src/content/blog"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
@@ -23,7 +87,6 @@ collections:
       - { label: "描述", name: "description", widget: "text" }
       - { label: "发布日期", name: "pubDate", widget: "datetime", format: "YYYY-MM-DD" }
       - { label: "封面图", name: "heroImage", widget: "image" }
-      - { label: "资源类别", name: "category", widget: "select", options: ["软件", "电子书", "教程", "工具", "素材", "其他"] }
-      - { label: "标签", name: "tags", widget: "list" }
-      - { label: "下载链接", name: "downloadLink", widget: "string" }
-      - { label: "资源介绍", name: "body", widget: "markdown" }
+      - { label: "分类", name: "categories", widget: "list", default: ["blog"] }
+      - { label: "标签", name: "tags", widget: "select", multiple: true, options: ["前端", "后端", "设计", "运维", "数据库", "人工智能", "区块链", "移动开发", "游戏开发", "云计算", "网络安全", "开源项目", "编程语言", "架构设计", "性能优化", "测试", "DevOps", "微服务", "容器化", "serverless"], allow_add: true }
+      - { label: "正文内容", name: "body", widget: "markdown" }

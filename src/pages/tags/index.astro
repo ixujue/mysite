@@ -1,0 +1,148 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+
+// 获取所有标签并统计文章数量
+const tags = posts.reduce((acc, post) => {
+  if (!post.data.tags) return acc;
+  post.data.tags.forEach(tag => {
+    if (!acc[tag]) acc[tag] = 0;
+    acc[tag]++;
+  });
+  return acc;
+}, {});
+
+// 将标签转换为数组并按文章数量排序
+const sortedTags = Object.entries(tags)
+  .map(([name, count]) => ({ name, count }))
+  .sort((a, b) => b.count - a.count);
+
+// 按照类别组织标签
+const tagCategories = {
+  '技术': ['编程', '开发', '前端', '后端', 'AI', '数据库'],
+  '设计': ['UI', 'UX', '平面设计', '插画', '动画'],
+  '工具': ['软件', '应用', '效率', '工作流'],
+  '学习': ['教程', '课程', '认证', '考试'],
+  '资源': ['电子书', '素材', '模板', '音效']
+};
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title="标签 | {SITE_TITLE}" description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>标签云</h1>
+			
+			<div class="tag-categories">
+				{Object.entries(tagCategories).map(([category, categoryTags]) => (
+					<div class="tag-category">
+						<h2>{category}</h2>
+						<div class="tag-cloud">
+							{sortedTags
+								.filter(tag => categoryTags.includes(tag.name))
+								.map(tag => (
+									<a 
+										href={`/tags/${tag.name}/`}
+										class="tag"
+										data-count={tag.count}
+									>
+										{tag.name}
+										<span class="count">({tag.count})</span>
+									</a>
+								))
+							}
+						</div>
+					</div>
+				))}
+			</div>
+
+			<div class="all-tags">
+				<h2>所有标签</h2>
+				<div class="tag-cloud">
+					{sortedTags.map(tag => (
+						<a 
+							href={`/tags/${tag.name}/`}
+							class="tag"
+							data-count={tag.count}
+						>
+							{tag.name}
+							<span class="count">({tag.count})</span>
+						</a>
+					))}
+				</div>
+			</div>
+		</main>
+		<style>
+			main {
+				width: 100%;
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 3em 1em;
+			}
+			h1 {
+				text-align: center;
+				margin-bottom: 2em;
+			}
+			.tag-categories {
+				display: grid;
+				gap: 2em;
+				margin-bottom: 3em;
+			}
+			.tag-category h2 {
+				margin-bottom: 1em;
+				color: rgb(var(--black));
+				font-size: 1.5em;
+			}
+			.tag-cloud {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 1em;
+			}
+			.tag {
+				padding: 0.5em 1em;
+				border-radius: 20px;
+				background: #f4f4f4;
+				color: rgb(var(--black));
+				text-decoration: none;
+				transition: all 0.2s ease;
+				font-size: calc(0.9em + 0.1em * var(--tag-size, 1));
+			}
+			.tag:hover {
+				background: rgb(var(--accent));
+				color: white;
+				transform: translateY(-2px);
+			}
+			.count {
+				margin-left: 0.5em;
+				font-size: 0.8em;
+				color: rgb(var(--gray));
+			}
+			.tag:hover .count {
+				color: rgba(255, 255, 255, 0.8);
+			}
+			.all-tags {
+				margin-top: 3em;
+				padding-top: 2em;
+				border-top: 1px solid #eee;
+			}
+			.all-tags h2 {
+				margin-bottom: 1em;
+			}
+			@media (max-width: 768px) {
+				.tag-cloud {
+					justify-content: center;
+				}
+			}
+		</style>
+		<Footer />
+	</body>
+</html>

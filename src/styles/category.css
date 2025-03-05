@@ -1,0 +1,56 @@
+/* 栏目页面样式 */
+main {
+  padding-top: 80px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.category-header {
+  text-align: center;
+  margin-bottom: 2em;
+}
+
+.category-header h1 {
+  font-size: 2.5em;
+  color: rgb(var(--black));
+  margin-bottom: 0.5em;
+}
+
+.category-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.category-link {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.category-link:hover {
+  background-color: var(--theme-accent);
+  color: white;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .category-header {
+    margin-top: 3rem;
+    padding: 1.5rem 0;
+  }
+
+  .category-header h1 {
+    font-size: 2rem;
+  }
+
+  .category-nav {
+    padding: 0 1rem;
+  }
+}
