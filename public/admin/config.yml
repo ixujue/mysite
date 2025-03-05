@@ -1,0 +1,23 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+locale: 'zh_Hans'
+
+collections:
+  - name: "resources"
+    label: "资源"
+    folder: "src/content/blog"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "标题", name: "title", widget: "string" }
+      - { label: "描述", name: "description", widget: "text" }
+      - { label: "发布日期", name: "pubDate", widget: "datetime", format: "YYYY-MM-DD" }
+      - { label: "封面图", name: "heroImage", widget: "image" }
+      - { label: "资源类别", name: "category", widget: "select", options: ["软件", "电子书", "教程", "工具", "素材", "其他"] }
+      - { label: "标签", name: "tags", widget: "list" }
+      - { label: "下载链接", name: "downloadLink", widget: "string" }
+      - { label: "资源介绍", name: "body", widget: "markdown" }
