@@ -2,9 +2,9 @@ site_url: https://www.365121.xyz
 search: false
 backend:
   name: github
-  repo: ixujue/mysite
+  repo: "ixujue/mysite"
   branch: main
-  base_url: https://www.365121.xyz/admin
+  base_url: https://decap.365121.xyz/
   auth_endpoint: /auth
 
 media_folder: "public/uploads"
