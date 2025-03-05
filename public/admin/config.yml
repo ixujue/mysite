@@ -1,3 +1,5 @@
+site_url: https://www.365121.xyz
+search: false
 backend:
   name: github
   repo: ixujue/mysite
