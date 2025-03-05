@@ -10,6 +10,7 @@ backend:
 media_folder: "public/uploads"
 public_folder: "/uploads"
 locale: 'zh_Hans'
+display_url: https://www.365121.xyz/365121
 
 collections:
   - name: "resources"
