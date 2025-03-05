@@ -1,0 +1,226 @@
+---
+// 侧边栏组件，用于显示热门文章、用户信息等
+import FormattedDate from './FormattedDate.astro';
+
+interface PopularPost {
+  title: string;
+  link: string;
+  image?: string;
+  date?: Date;
+}
+
+interface Props {
+  popularPosts?: PopularPost[];
+  showCategories?: boolean;
+}
+
+const { 
+  popularPosts = [], 
+  showCategories = true 
+} = Astro.props;
+
+// 默认分类
+const categories = [
+  { name: '不会日报', link: '/category/news' },
+  { name: '资源推荐', link: '/category/resources' },
+  { name: '生活方式', link: '/category/lifestyle' },
+  { name: '效率技巧', link: '/category/productivity' },
+  { name: '硬件', link: '/category/hardware' },
+];
+---
+
+<aside class="sidebar">
+  <!-- 用户信息或会员区域 -->
+  <div class="sidebar-section member-section">
+    <h3>成为会员</h3>
+    <div class="member-info">
+      <p>加入哪里不会品牌会员，获取更多权益</p>
+      <a href="/membership" class="btn-membership">了解更多</a>
+    </div>
+  </div>
+
+  <!-- 热门文章 -->
+  {popularPosts.length > 0 && (
+    <div class="sidebar-section">
+      <h3>热门文章</h3>
+      <ul class="popular-posts">
+        {popularPosts.map((post) => (
+          <li>
+            <a href={post.link}>
+              {post.image && <img src={post.image} alt={post.title} />}
+              <div class="post-info">
+                <h4>{post.title}</h4>
+                {post.date && <p class="date"><FormattedDate date={post.date} /></p>}
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  <!-- 分类导航 -->
+  {showCategories && (
+    <div class="sidebar-section">
+      <h3>分类浏览</h3>
+      <ul class="categories">
+        {categories.map((category) => (
+          <li>
+            <a href={category.link}>{category.name}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  <!-- 标签云或其他内容 -->
+  <div class="sidebar-section">
+    <h3>Matrix 精选</h3>
+    <div class="matrix-content">
+      <p>从科研民工到职场新人，理想与现实如何平衡</p>
+      <p>Geek 人生需要多少体系？</p>
+    </div>
+  </div>
+</aside>
+
+<style>
+  .sidebar {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .sidebar-section {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(var(--black), 5%);
+  }
+
+  .sidebar-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: rgb(var(--black));
+    border-bottom: 1px solid rgb(var(--gray-light));
+    padding-bottom: 0.5rem;
+  }
+
+  .member-section {
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    color: white;
+  }
+
+  .member-section h3 {
+    color: white;
+    border-bottom-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .member-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .btn-membership {
+    display: inline-block;
+    background-color: white;
+    color: #6e8efb;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.2s ease;
+  }
+
+  .btn-membership:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .popular-posts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .popular-posts li a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: rgb(var(--gray-dark));
+  }
+
+  .popular-posts li a:hover {
+    color: var(--accent);
+  }
+
+  .popular-posts img {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .post-info h4 {
+    font-size: 0.95rem;
+    margin: 0 0 0.25rem 0;
+    line-height: 1.4;
+  }
+
+  .post-info .date {
+    font-size: 0.8rem;
+    color: rgb(var(--gray));
+    margin: 0;
+  }
+
+  .categories {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .categories li {
+    margin-bottom: 0.5rem;
+  }
+
+  .categories a {
+    display: block;
+    padding: 0.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    color: rgb(var(--gray-dark));
+    transition: background-color 0.2s ease;
+  }
+
+  .categories a:hover {
+    background-color: rgb(var(--gray-light));
+    color: var(--accent);
+  }
+
+  .matrix-content {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .matrix-content p {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgb(var(--gray-light));
+    margin: 0;
+  }
+
+  .matrix-content p:last-child {
+    border-bottom: none;
+  }
+
+  @media (max-width: 768px) {
+    .sidebar {
+      margin-top: 2rem;
+    }
+  }
+</style>

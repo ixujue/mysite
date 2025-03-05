@@ -3,13 +3,13 @@ import HeaderLink from './HeaderLink.astro';
 import { SITE_TITLE } from '../consts';
 ---
 
-<header>
+<header class="site-header">
 	<nav>
 		<h2><a href="/">{SITE_TITLE}</a></h2>
 		<div class="internal-links">
-			<HeaderLink href="/">Home</HeaderLink>
-			<HeaderLink href="/blog">Blog</HeaderLink>
-			<HeaderLink href="/about">About</HeaderLink>
+			<HeaderLink href="/">首页</HeaderLink>
+			<HeaderLink href="/blog">分享资源</HeaderLink>
+			<HeaderLink href="/about">关于我们</HeaderLink>
 		</div>
 		<div class="social-links">
 			<a href="https://m.webtoo.ls/@astro" target="_blank">
@@ -43,11 +43,19 @@ import { SITE_TITLE } from '../consts';
 	</nav>
 </header>
 <style>
-	header {
+	.site-header {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 1000;
 		margin: 0;
 		padding: 0 1em;
-		background: white;
-		box-shadow: 0 2px 8px rgba(var(--black), 5%);
+		background: rgba(255, 255, 255, 0.85);
+		backdrop-filter: blur(15px);
+		-webkit-backdrop-filter: blur(15px);
+		box-shadow: 0 2px 10px rgba(var(--black), 8%);
+		transition: all 0.3s ease;
 	}
 	h2 {
 		margin: 0;
@@ -65,9 +73,10 @@ import { SITE_TITLE } from '../consts';
 	}
 	nav a {
 		padding: 1em 0.5em;
-		color: var(--black);
+		color: rgb(var(--black));
 		border-bottom: 4px solid transparent;
 		text-decoration: none;
+		transition: color 0.3s ease, border-color 0.3s ease;
 	}
 	nav a.active {
 		text-decoration: none;
@@ -82,4 +91,52 @@ import { SITE_TITLE } from '../consts';
 			display: none;
 		}
 	}
+
+	/* 暗色背景下的样式 */
+	.site-header.dark-bg {
+		background: rgba(0, 0, 0, 0.7);
+		backdrop-filter: blur(15px);
+		-webkit-backdrop-filter: blur(15px);
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+	}
+	.site-header.dark-bg nav a,
+	.site-header.dark-bg h2 a {
+		color: white;
+	}
+
+	.site-header.dark-bg nav a.active {
+		border-bottom-color: white;
+	}
 </style>
+
+<script>
+	// 根据滚动位置和背景颜色动态调整导航栏样式
+	document.addEventListener('DOMContentLoaded', () => {
+		const header = document.querySelector('.site-header');
+		const carousel = document.querySelector('.carousel-container');
+		
+		if (!header || !carousel) return;
+		
+		// 初始设置
+		const carouselHeight = carousel.offsetHeight;
+		const headerHeight = header.offsetHeight;
+		
+		// 根据当前轮播图的背景颜色调整导航栏样式
+		function updateHeaderStyle() {
+			const scrollPosition = window.scrollY;
+			
+			// 当在轮播图区域内时
+			if (scrollPosition < carouselHeight - headerHeight) {
+				header.classList.add('dark-bg');
+			} else {
+				header.classList.remove('dark-bg');
+			}
+		}
+		
+		// 初始调用一次
+		updateHeaderStyle();
+		
+		// 监听滚动事件
+		window.addEventListener('scroll', updateHeaderStyle);
+	});
+</script>

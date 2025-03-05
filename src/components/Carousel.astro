@@ -1,0 +1,279 @@
+---
+// 轮播组件，用于展示首页的精选内容
+interface CarouselItem {
+  title: string;
+  description: string;
+  image: string;
+  link: string;
+}
+
+interface Props {
+  items: CarouselItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="carousel-container">
+  <div class="carousel">
+    {items.map((item, index) => (
+      <div class="carousel-item" data-index={index} style={`background-image: url(${item.image});`}>
+        <div class="carousel-content">
+          <div class="carousel-text">
+            <h2>{item.title}</h2>
+            <p>{item.description}</p>
+          </div>
+          <div class="carousel-image">
+            <img src={item.image} alt={item.title} />
+          </div>
+        </div>
+        <a href={item.link} class="carousel-link"></a>
+      </div>
+    ))}
+  </div>
+  <div class="carousel-indicators">
+    {items.map((_, index) => (
+      <button class="indicator" data-index={index}></button>
+    ))}
+  </div>
+  <button class="carousel-control prev">&lt;</button>
+  <button class="carousel-control next">&gt;</button>
+</div>
+
+<script>
+  // 轮播功能的客户端脚本
+  document.addEventListener('DOMContentLoaded', () => {
+    const carousel = document.querySelector('.carousel');
+    const items = document.querySelectorAll('.carousel-item');
+    const indicators = document.querySelectorAll('.indicator');
+    const prevBtn = document.querySelector('.carousel-control.prev');
+    const nextBtn = document.querySelector('.carousel-control.next');
+    
+    if (!carousel || !items.length || !indicators.length || !prevBtn || !nextBtn) return;
+    
+    let currentIndex = 0;
+    const itemCount = items.length;
+    
+    // 设置初始状态
+    updateCarousel();
+    
+    // 设置指示器点击事件
+    indicators.forEach((indicator, index) => {
+      indicator.addEventListener('click', () => {
+        currentIndex = index;
+        updateCarousel();
+      });
+    });
+    
+    // 设置前进后退按钮
+    prevBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + itemCount) % itemCount;
+      updateCarousel();
+    });
+    
+    nextBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % itemCount;
+      updateCarousel();
+    });
+    
+    // 自动轮播
+    let interval = setInterval(() => {
+      currentIndex = (currentIndex + 1) % itemCount;
+      updateCarousel();
+    }, 5000);
+    
+    // 鼠标悬停时暂停轮播
+    carousel.addEventListener('mouseenter', () => {
+      clearInterval(interval);
+    });
+    
+    carousel.addEventListener('mouseleave', () => {
+      interval = setInterval(() => {
+        currentIndex = (currentIndex + 1) % itemCount;
+        updateCarousel();
+      }, 5000);
+    });
+    
+    function updateCarousel() {
+      // 更新轮播项
+      items.forEach((item, index) => {
+        if (index === currentIndex) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+      
+      // 更新指示器
+      indicators.forEach((indicator, index) => {
+        if (index === currentIndex) {
+          indicator.classList.add('active');
+        } else {
+          indicator.classList.remove('active');
+        }
+      });
+    }
+  });
+</script>
+
+<style>
+  .carousel-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: var(--box-shadow);
+  }
+  
+  .carousel {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .carousel-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .carousel-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(26, 42, 108, 0.85), rgba(178, 31, 31, 0.75), rgba(253, 187, 45, 0.65));
+    z-index: 1;
+    transition: opacity 0.3s ease;
+  }
+
+  .carousel-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 2;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  }
+
+  .carousel-text h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: white;
+    font-weight: bold;
+    letter-spacing: -0.5px;
+  }
+
+  .carousel-text p {
+    font-size: 1.2rem;
+    max-width: 80%;
+    line-height: 1.6;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  }
+  
+  .carousel-image {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .carousel-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  
+  .carousel-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+  
+  .carousel-indicators {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 2;
+  }
+  
+  .indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .indicator.active {
+    background-color: white;
+  }
+  
+  .carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    transition: background-color 0.3s ease;
+  }
+  
+  .carousel-control:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  
+  .carousel-control.prev {
+    left: 20px;
+  }
+  
+  .carousel-control.next {
+    right: 20px;
+  }
+  
+  @media (max-width: 768px) {
+    .carousel-container {
+      height: 300px;
+    }
+    
+    .carousel-content {
+      flex-direction: column;
+    }
+    
+    .carousel-text h2 {
+      font-size: 1.8rem;
+    }
+    
+    .carousel-text p {
+      font-size: 1rem;
+      max-width: 100%;
+    }
+  }
+</style>
