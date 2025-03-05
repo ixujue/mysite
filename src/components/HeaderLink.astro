@@ -31,15 +31,4 @@ const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
 		font-weight: 600;
 		color: var(--accent);
 	}
-	a.active::after {
-		content: '';
-		position: absolute;
-		bottom: -2px;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 20px;
-		height: 3px;
-		background-color: var(--accent);
-		border-radius: 3px;
-	}
 </style>

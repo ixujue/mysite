@@ -29,9 +29,7 @@ const popularPosts = posts.slice(0, 5).map(post => ({
 	<body>
 		<Header />
 		<main>
-			<div class="main-content">
-				<div class="content-area">
-					<Carousel
+			<Carousel
 						items={[
 							{
 								title: '借助 OmniFocus 4 搭建属于自己的任务管理系统',
@@ -46,7 +44,36 @@ const popularPosts = posts.slice(0, 5).map(post => ({
 								link: '/blog/essentialism/'
 							}
 						]}
-					/>
+			/>
+			<!-- 四个固定栏目 -->
+			<div class="feature-links">
+						<a href="/blog/share" class="feature-item">
+							<div class="feature-image-container">
+								<img src="/uploads/星梦每程.png" alt="与大家分享 #我的2024" />
+							</div>
+							<span>与大家分享 #我的2024</span>
+						</a>
+						<a href="/blog/movies" class="feature-item">
+							<div class="feature-image-container">
+								<img src="/uploads/wall-logo.jpg" alt="本周百片" />
+							</div>
+							<span>本周百片</span>
+						</a>
+						<a href="/blog/social" class="feature-item">
+							<div class="feature-image-container">
+								<img src="/uploads/精要主义封面.png" alt="社媒运营实习生" />
+							</div>
+							<span>社媒运营实习生</span>
+						</a>
+						<a href="/blog/guide" class="feature-item">
+							<div class="feature-image-container">
+								<img src="/uploads/logo2048.png" alt="3D打印入坑指南" />
+							</div>
+							<span>3D打印入坑指南</span>
+						</a>
+			</div>
+			<div class="main-content">
+				<div class="content-area">
 					<h2>最新文章</h2>
 					<section class="posts-grid">
 				<ul>
@@ -71,15 +98,15 @@ const popularPosts = posts.slice(0, 5).map(post => ({
 		</main>
 		<style>
 			main {
-				max-width: 1200px;
 				margin: 0 auto;
-				padding: 2rem 1rem;
 			}
 			.main-content {
 				display: grid;
 				grid-template-columns: 1fr 300px;
 				gap: 2rem;
-				margin-top: 60px; /* 为固定导航栏留出空间 */
+				max-width: 1400px;
+				margin: 0 auto;
+				padding: 0 2rem;
 			}
 			.content-area {
 				width: 100%;
@@ -89,8 +116,10 @@ const popularPosts = posts.slice(0, 5).map(post => ({
 			.feature-links {
 				display: grid;
 				grid-template-columns: repeat(4, 1fr);
-				gap: 1rem;
-				margin: 2rem 0;
+				gap: 1.5rem;
+				margin: 2rem auto;
+				max-width: 1120px;
+				padding: 0
 			}
 			
 			.feature-item {
@@ -107,26 +136,29 @@ const popularPosts = posts.slice(0, 5).map(post => ({
 				box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 			}
 			
+			.feature-image-container {
+				width: 100%;
+				height: 0;
+				padding-bottom: 56.25%; /* 16:9 比例 */
+				position: relative;
+				overflow: hidden;
+			}
+			
 			.feature-item img {
 				width: 100%;
-				height: 150px;
+				height: 100%;
 				object-fit: cover;
 				transition: transform 0.5s ease;
+				position: absolute;
+				top: 0;
+				left: 0;
 			}
 			
 			.feature-item:hover img {
 				transform: scale(1.1);
 			}
 			.feature-item span {
-				position: absolute;
-				bottom: 0;
-				left: 0;
-				right: 0;
-				padding: 0.5rem;
-				background: rgba(0, 0, 0, 0.7);
-				color: white;
-				text-align: center;
-				font-size: 0.9rem;
+				display: none; /* 隐藏文字标签 */
 			}
 			
 			@media (max-width: 768px) {

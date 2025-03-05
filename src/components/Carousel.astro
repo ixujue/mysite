@@ -15,18 +15,11 @@ const { items } = Astro.props;
 ---
 
 <div class="carousel-container">
+  <script is:inline src="/js/color-thief.js"></script>
   <div class="carousel">
     {items.map((item, index) => (
       <div class="carousel-item" data-index={index} style={`background-image: url(${item.image});`}>
-        <div class="carousel-content">
-          <div class="carousel-text">
-            <h2>{item.title}</h2>
-            <p>{item.description}</p>
-          </div>
-          <div class="carousel-image">
-            <img src={item.image} alt={item.title} />
-          </div>
-        </div>
+        <div class="carousel-content"></div>
         <a href={item.link} class="carousel-link"></a>
       </div>
     ))}
@@ -99,6 +92,16 @@ const { items } = Astro.props;
       items.forEach((item, index) => {
         if (index === currentIndex) {
           item.classList.add('active');
+          // 提取当前图片的主色调
+          const img = new Image();
+          img.crossOrigin = 'Anonymous';
+          img.onload = function() {
+            const colorThief = new ColorThief();
+            const color = colorThief.getColor(img);
+            const [r, g, b] = color;
+            item.style.setProperty('--dominant-color', `rgb(${r}, ${g}, ${b})`);
+          };
+          img.src = item.style.backgroundImage.slice(5, -2);
         } else {
           item.classList.remove('active');
         }
@@ -119,24 +122,21 @@ const { items } = Astro.props;
 <style>
   .carousel-container {
     position: relative;
-    width: 100%;
-    height: 400px;
+    width: 100vw;
+    height: 500px;
     overflow: hidden;
-    border-radius: 12px;
     margin-bottom: 2rem;
-    box-shadow: var(--box-shadow);
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
   }
   
   .carousel {
-    position: relative;
     width: 100%;
     height: 100%;
   }
   
   .carousel-item {
     position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
     opacity: 0;
@@ -144,54 +144,49 @@ const { items } = Astro.props;
     background-size: cover;
     background-position: center;
   }
-  
-  .carousel-item::before {
+
+  .carousel-item::before,
+  .carousel-item::after {
     content: '';
     position: absolute;
     top: 0;
-    left: 0;
+    height: 100%;
+    width: 50vw; /* 使用视口宽度单位，确保填满左右两侧 */
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .carousel-item::before {
+    right: 100%;
+    background-image: inherit; /* 继承父元素的背景图片 */
+  }
+
+  .carousel-item::after {
+    left: 100%;
+    background-image: inherit; /* 继承父元素的背景图片 */
+  }
+  
+  .carousel-item.active {
+    opacity: 1;
+  }
+
+  .carousel-item.active::before,
+  .carousel-item.active::after {
+    opacity: 1;
+    background-color: var(--dominant-color, rgba(0, 0, 0, 0.5));
+  }
+  
+  .carousel-content {
+    position: relative;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(26, 42, 108, 0.85), rgba(178, 31, 31, 0.75), rgba(253, 187, 45, 0.65));
-    z-index: 1;
-    transition: opacity 0.3s ease;
-  }
-
-  .carousel-text {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     z-index: 2;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-  }
-
-  .carousel-text h2 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    color: white;
-    font-weight: bold;
-    letter-spacing: -0.5px;
-  }
-
-  .carousel-text p {
-    font-size: 1.2rem;
-    max-width: 80%;
-    line-height: 1.6;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
   }
   
   .carousel-image {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .carousel-image img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+    display: none;
   }
   
   .carousel-link {
@@ -264,16 +259,10 @@ const { items } = Astro.props;
     }
     
     .carousel-content {
-      flex-direction: column;
-    }
-    
-    .carousel-text h2 {
-      font-size: 1.8rem;
-    }
-    
-    .carousel-text p {
-      font-size: 1rem;
-      max-width: 100%;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
     }
   }
 </style>

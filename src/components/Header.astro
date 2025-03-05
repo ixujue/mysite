@@ -8,8 +8,152 @@ import { SITE_TITLE } from '../consts';
 		<h2><a href="/">{SITE_TITLE}</a></h2>
 		<div class="internal-links">
 			<HeaderLink href="/">首页</HeaderLink>
-			<HeaderLink href="/blog">分享资源</HeaderLink>
+			<HeaderLink href="/blog">博客</HeaderLink>
 			<HeaderLink href="/about">关于我们</HeaderLink>
+			<div class="dropdown">
+				<HeaderLink href="/digital-reading">数字阅读</HeaderLink>
+				<div class="dropdown-content">
+					<div>
+						<div class="submenu">
+							<h3>电子书库</h3>
+							<a href="/digital-reading/tech">科技前沿</a>
+							<a href="/digital-reading/literature">文学经典</a>
+							<a href="/digital-reading/academic">学术专著</a>
+						</div>
+						<div class="submenu">
+							<h3>有声书专区</h3>
+							<a href="/digital-reading/language">外语学习</a>
+							<a href="/digital-reading/audiobook">名著朗读</a>
+						</div>
+					</div>
+					<div class="hot-content">
+						<a href="/digital-reading/book/1" class="hot-item">
+							<img src="/uploads/book1.jpg" alt="深度学习实战" />
+							<div class="title">深度学习实战：基于PyTorch的计算机视觉应用</div>
+						</a>
+						<a href="/digital-reading/book/2" class="hot-item">
+							<img src="/uploads/book2.jpg" alt="人类简史" />
+							<div class="title">人类简史：从动物到上帝</div>
+						</a>
+						<a href="/digital-reading/book/3" class="hot-item">
+							<img src="/uploads/book3.jpg" alt="原则" />
+							<div class="title">原则：应对变化中的世界秩序</div>
+						</a>
+						<a href="/digital-reading/book/4" class="hot-item">
+							<img src="/uploads/book4.jpg" alt="认知觉醒" />
+							<div class="title">认知觉醒：开启自我改变的原动力</div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="dropdown">
+				<HeaderLink href="/education">教育赋能</HeaderLink>
+				<div class="dropdown-content">
+					<div>
+						<div class="submenu">
+							<h3>课程资料</h3>
+							<a href="/education/mooc">名校公开课</a>
+							<a href="/education/certification">职业认证</a>
+							<a href="/education/language">语言学习</a>
+						</div>
+						<div class="submenu">
+							<h3>学术工具</h3>
+							<a href="/education/templates">论文模板</a>
+							<a href="/education/datasets">研究数据集</a>
+						</div>
+					</div>
+					<div class="hot-content">
+						<a href="/education/course/1" class="hot-item">
+							<img src="/uploads/course1.jpg" alt="机器学习" />
+							<div class="title">斯坦福大学：机器学习基础与实践</div>
+						</a>
+						<a href="/education/course/2" class="hot-item">
+							<img src="/uploads/course2.jpg" alt="数据结构" />
+							<div class="title">数据结构与算法分析</div>
+						</a>
+						<a href="/education/course/3" class="hot-item">
+							<img src="/uploads/course3.jpg" alt="Python" />
+							<div class="title">Python编程：从入门到实践</div>
+						</a>
+						<a href="/education/course/4" class="hot-item">
+							<img src="/uploads/course4.jpg" alt="论文写作" />
+							<div class="title">学术论文写作与发表指南</div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="dropdown">
+				<HeaderLink href="/creative">创意素材</HeaderLink>
+				<div class="dropdown-content">
+					<div>
+						<div class="submenu">
+							<h3>设计资源</h3>
+							<a href="/creative/ui">UI套件</a>
+							<a href="/creative/photo">摄影图库</a>
+							<a href="/creative/illustration">矢量插画</a>
+						</div>
+						<div class="submenu">
+							<h3>多媒体</h3>
+							<a href="/creative/audio">音效素材</a>
+							<a href="/creative/video">视频模板</a>
+						</div>
+					</div>
+					<div class="hot-content">
+						<a href="/creative/ui/1" class="hot-item">
+							<img src="/uploads/ui1.jpg" alt="设计系统" />
+							<div class="title">完整的设计系统和组件库</div>
+						</a>
+						<a href="/creative/photo/1" class="hot-item">
+							<img src="/uploads/photo1.jpg" alt="自然风光" />
+							<div class="title">高清自然风光摄影集</div>
+						</a>
+						<a href="/creative/illustration/1" class="hot-item">
+							<img src="/uploads/illustration1.jpg" alt="插画集" />
+							<div class="title">现代风格矢量插画合集</div>
+						</a>
+						<a href="/creative/video/1" class="hot-item">
+							<img src="/uploads/video1.jpg" alt="视频模板" />
+							<div class="title">商业宣传视频模板精选</div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="dropdown">
+				<HeaderLink href="/software">软件工坊</HeaderLink>
+				<div class="dropdown-content">
+					<div>
+						<div class="submenu">
+							<h3>桌面应用</h3>
+							<a href="/software/dev-tools">开发工具</a>
+							<a href="/software/productivity">效率神器</a>
+							<a href="/software/alternatives">开源替代</a>
+						</div>
+						<div class="submenu">
+							<h3>移动应用</h3>
+							<a href="/software/android">安卓精品</a>
+							<a href="/software/ios">iOS越狱资源</a>
+						</div>
+					</div>
+					<div class="hot-content">
+						<a href="/software/dev-tools/1" class="hot-item">
+							<img src="/uploads/dev1.jpg" alt="VSCode" />
+							<div class="title">VSCode 高效开发指南</div>
+						</a>
+						<a href="/software/productivity/1" class="hot-item">
+							<img src="/uploads/prod1.jpg" alt="效率工具" />
+							<div class="title">2024年最佳生产力工具</div>
+						</a>
+						<a href="/software/android/1" class="hot-item">
+							<img src="/uploads/android1.jpg" alt="安卓应用" />
+							<div class="title">安卓必备应用合集</div>
+						</a>
+						<a href="/software/ios/1" class="hot-item">
+							<img src="/uploads/ios1.jpg" alt="iOS应用" />
+							<div class="title">iOS生产力应用推荐</div>
+						</a>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div class="social-links">
 			<a href="https://m.webtoo.ls/@astro" target="_blank">
@@ -57,6 +201,102 @@ import { SITE_TITLE } from '../consts';
 		box-shadow: 0 2px 10px rgba(var(--black), 8%);
 		transition: all 0.3s ease;
 	}
+
+	.dropdown {
+		position: relative;
+		display: inline-block;
+	}
+
+	.dropdown-content {
+		display: none;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		background: rgba(255, 255, 255, 0.95);
+		min-width: 600px;
+		box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+		padding: 1.5em;
+		z-index: 1001;
+		border-radius: 12px;
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 2em;
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(-10px);
+		transition: all 0.3s ease;
+	}
+
+	.dropdown:hover .dropdown-content {
+		display: flex;
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+	}
+
+	.submenu {
+		min-width: 160px;
+	}
+
+	.submenu h3 {
+		margin: 0 0 0.8em;
+		color: rgb(var(--black));
+		font-size: 1em;
+		font-weight: 600;
+		padding-bottom: 0.5em;
+		border-bottom: 1px solid rgba(var(--gray), 0.2);
+	}
+
+	.submenu a {
+		display: block;
+		padding: 0.5em 0;
+		color: rgb(var(--gray));
+		font-size: 0.9em;
+		transition: all 0.2s ease;
+	}
+
+	.submenu a:hover {
+		color: var(--accent);
+		padding-left: 0.5em;
+	}
+
+	.hot-content {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1em;
+		padding-left: 1em;
+		border-left: 1px solid rgba(var(--gray), 0.2);
+	}
+
+	.hot-item {
+		display: flex;
+		align-items: center;
+		gap: 1em;
+		padding: 0.5em;
+		border-radius: 8px;
+		transition: all 0.2s ease;
+	}
+
+	.hot-item:hover {
+		background: rgba(var(--gray-light), 0.5);
+	}
+
+	.hot-item img {
+		width: 60px;
+		height: 60px;
+		object-fit: cover;
+		border-radius: 6px;
+	}
+
+	.hot-item .title {
+		font-size: 0.9em;
+		color: rgb(var(--gray-dark));
+		line-height: 1.4;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
 	h2 {
 		margin: 0;
 		font-size: 1em;
@@ -98,14 +338,27 @@ import { SITE_TITLE } from '../consts';
 		backdrop-filter: blur(15px);
 		-webkit-backdrop-filter: blur(15px);
 		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-	}
-	.site-header.dark-bg nav a,
-	.site-header.dark-bg h2 a {
+ltth	}
+	.site-header.dark-bg nav > a,
+	.site-header.dark-bg h2 a,
+	.site-header.dark-bg .internal-links > a,
+	.site-header.dark-bg .internal-links > .dropdown > a {
 		color: white;
 	}
 
 	.site-header.dark-bg nav a.active {
 		border-bottom-color: white;
+	}
+
+	/* 确保深色背景下下拉菜单的文字颜色保持可读性 */
+	.site-header.dark-bg .dropdown-content a,
+	.site-header.dark-bg .submenu h3,
+	.site-header.dark-bg .hot-item .title {
+		color: rgb(var(--gray-dark));
+	}
+
+	.site-header.dark-bg .dropdown-content a:hover {
+		color: var(--accent);
 	}
 </style>
 
@@ -128,13 +381,29 @@ import { SITE_TITLE } from '../consts';
 			// 当在轮播图区域内时
 			if (scrollPosition < carouselHeight - headerHeight) {
 				header.classList.add('dark-bg');
+				console.log('Adding dark-bg class, scrollPosition:', scrollPosition, 'carouselHeight:', carouselHeight, 'headerHeight:', headerHeight);
 			} else {
 				header.classList.remove('dark-bg');
+				console.log('Removing dark-bg class, scrollPosition:', scrollPosition, 'carouselHeight:', carouselHeight, 'headerHeight:', headerHeight);
 			}
 		}
 		
 		// 初始调用一次
 		updateHeaderStyle();
+		
+		// 确保在页面完全加载后再次调用，以获取正确的元素高度
+		window.addEventListener('load', () => {
+			// 重新获取高度，因为在DOMContentLoaded时可能还未完全渲染
+			const updatedCarouselHeight = carousel.offsetHeight;
+			const updatedHeaderHeight = header.offsetHeight;
+			console.log('Updated heights - carousel:', updatedCarouselHeight, 'header:', updatedHeaderHeight);
+			
+			// 强制添加一次dark-bg类
+			header.classList.add('dark-bg');
+			
+			// 更新函数中使用的高度值
+			updateHeaderStyle();
+		});
 		
 		// 监听滚动事件
 		window.addEventListener('scroll', updateHeaderStyle);
