@@ -34,7 +34,7 @@ const { items } = Astro.props;
 </div>
 
 <script>
-  // 轮播功能的客户端脚本
+  // 轮播功能的客户端脚本 - 优化版本
   document.addEventListener('DOMContentLoaded', () => {
     const carousel = document.querySelector('.carousel');
     const items = document.querySelectorAll('.carousel-item');
@@ -46,62 +46,70 @@ const { items } = Astro.props;
     
     let currentIndex = 0;
     const itemCount = items.length;
+    let interval;
+    
+    // 预加载图片并提取颜色
+    const colorCache = new Map();
+    items.forEach((item) => {
+      const imgSrc = item.style.backgroundImage.slice(5, -2);
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = function() {
+        try {
+          const colorThief = new ColorThief();
+          const color = colorThief.getColor(img);
+          colorCache.set(imgSrc, color);
+          
+          // 如果是当前活动项，立即应用颜色
+          if (item.classList.contains('active')) {
+            applyColor(item, color);
+          }
+        } catch (e) {
+          console.warn('无法提取图片颜色:', e);
+        }
+      };
+      img.src = imgSrc;
+    });
     
     // 设置初始状态
     updateCarousel();
+    startAutoSlide();
     
-    // 设置指示器点击事件
-    indicators.forEach((indicator, index) => {
-      indicator.addEventListener('click', () => {
-        currentIndex = index;
+    // 设置指示器点击事件 - 使用事件委托
+    document.querySelector('.carousel-indicators').addEventListener('click', (e) => {
+      if (e.target.classList.contains('indicator')) {
+        currentIndex = parseInt(e.target.dataset.index, 10);
         updateCarousel();
-      });
+        resetAutoSlide();
+      }
     });
     
     // 设置前进后退按钮
     prevBtn.addEventListener('click', () => {
       currentIndex = (currentIndex - 1 + itemCount) % itemCount;
       updateCarousel();
+      resetAutoSlide();
     });
     
     nextBtn.addEventListener('click', () => {
       currentIndex = (currentIndex + 1) % itemCount;
       updateCarousel();
+      resetAutoSlide();
     });
-    
-    // 自动轮播
-    let interval = setInterval(() => {
-      currentIndex = (currentIndex + 1) % itemCount;
-      updateCarousel();
-    }, 5000);
     
     // 鼠标悬停时暂停轮播
-    carousel.addEventListener('mouseenter', () => {
-      clearInterval(interval);
-    });
-    
-    carousel.addEventListener('mouseleave', () => {
-      interval = setInterval(() => {
-        currentIndex = (currentIndex + 1) % itemCount;
-        updateCarousel();
-      }, 5000);
-    });
+    carousel.addEventListener('mouseenter', stopAutoSlide);
+    carousel.addEventListener('mouseleave', startAutoSlide);
     
     function updateCarousel() {
       // 更新轮播项
       items.forEach((item, index) => {
         if (index === currentIndex) {
           item.classList.add('active');
-          // 提取当前图片的主色调
-          const img = new Image();
-          img.crossOrigin = 'Anonymous';
-          img.onload = function() {
-            const colorThief = new ColorThief();
-            const color = colorThief.getColor(img);
-            const [r, g, b] = color;
-            item.style.setProperty('--dominant-color', `rgb(${r}, ${g}, ${b})`);
-          };
-          img.src = item.style.backgroundImage.slice(5, -2);
+          const imgSrc = item.style.backgroundImage.slice(5, -2);
+          if (colorCache.has(imgSrc)) {
+            applyColor(item, colorCache.get(imgSrc));
+          }
         } else {
           item.classList.remove('active');
         }
@@ -109,12 +117,30 @@ const { items } = Astro.props;
       
       // 更新指示器
       indicators.forEach((indicator, index) => {
-        if (index === currentIndex) {
-          indicator.classList.add('active');
-        } else {
-          indicator.classList.remove('active');
-        }
+        indicator.classList.toggle('active', index === currentIndex);
       });
+    }
+    
+    function applyColor(item, color) {
+      const [r, g, b] = color;
+      item.style.setProperty('--dominant-color', `rgb(${r}, ${g}, ${b})`);
+    }
+    
+    function startAutoSlide() {
+      stopAutoSlide();
+      interval = setInterval(() => {
+        currentIndex = (currentIndex + 1) % itemCount;
+        updateCarousel();
+      }, 5000);
+    }
+    
+    function stopAutoSlide() {
+      clearInterval(interval);
+    }
+    
+    function resetAutoSlide() {
+      stopAutoSlide();
+      startAutoSlide();
     }
   });
 </script>
