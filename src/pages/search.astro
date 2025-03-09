@@ -1,0 +1,262 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../consts';
+import { getCollection } from 'astro:content';
+
+// 获取URL参数中的搜索关键词
+const { q } = Astro.url.searchParams;
+const searchQuery = q ? q.toString().trim() : '';
+
+// 调试输出 - 检查URL参数
+console.log('URL参数:', Astro.url.searchParams.toString());
+console.log('原始搜索关键词:', q);
+console.log('处理后的搜索关键词:', searchQuery);
+
+// 获取所有内容集合
+const blogPosts = await getCollection('blog');
+const digitalReadingPosts = await getCollection('digitalReading');
+const educationPosts = await getCollection('education');
+const creativePosts = await getCollection('creative');
+const softwarePosts = await getCollection('software');
+
+// 合并所有内容
+const allContent = [
+  ...blogPosts.map(post => ({ ...post, type: '博客' })),
+  ...digitalReadingPosts.map(post => ({ ...post, type: '数字阅读' })),
+  ...educationPosts.map(post => ({ ...post, type: '教育赋能' })),
+  ...creativePosts.map(post => ({ ...post, type: '创意素材' })),
+  ...softwarePosts.map(post => ({ ...post, type: '软件工坊' }))
+];
+
+// 搜索逻辑
+let searchResults = [];
+if (searchQuery) {
+  const lowerQuery = searchQuery.toLowerCase();
+  console.log('搜索内容总数:', allContent.length);
+  
+  searchResults = allContent.filter(item => {
+    // 在标题、描述和内容中搜索
+    const titleMatch = item.data.title && item.data.title.toLowerCase().includes(lowerQuery);
+    const descMatch = item.data.description && item.data.description.toLowerCase().includes(lowerQuery);
+    const bodyMatch = item.body && typeof item.body === 'string' && item.body.toLowerCase().includes(lowerQuery);
+    const contentMatch = item.data.content && typeof item.data.content === 'string' && item.data.content.toLowerCase().includes(lowerQuery);
+    const excerptMatch = item.data.excerpt && typeof item.data.excerpt === 'string' && item.data.excerpt.toLowerCase().includes(lowerQuery);
+    const tagsMatch = item.data.tags && Array.isArray(item.data.tags) && item.data.tags.some(tag => tag.toLowerCase().includes(lowerQuery));
+    
+    const isMatch = titleMatch || descMatch || bodyMatch || contentMatch || excerptMatch || tagsMatch;
+    
+    // 详细记录每个内容项的匹配情况
+    if (isMatch) {
+      console.log(`匹配项: ${item.data.title}`, { 
+        collection: item.collection,
+        id: item.id,
+        titleMatch,
+        descMatch,
+        bodyMatch,
+        contentMatch,
+        excerptMatch,
+        tagsMatch
+      });
+    }
+    
+    return isMatch;
+  });
+  
+  // 调试输出
+  console.log(`搜索关键词: "${searchQuery}"`);
+  console.log(`找到结果数量: ${searchResults.length}`);
+}
+---
+
+<!doctype html>
+<html lang="zh-cn">
+  <head>
+    <BaseHead title={`搜索结果: ${searchQuery} | ${SITE_TITLE}`} description={`${SITE_TITLE}网站内容搜索结果`} />
+    <style>
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .search-header {
+        margin-bottom: 2rem;
+      }
+      .search-header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+      .search-header p {
+        color: #666;
+      }
+      .search-form {
+        margin-bottom: 2rem;
+        display: flex;
+      }
+      .search-form input {
+        flex: 1;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 4px 0 0 4px;
+        font-size: 1rem;
+      }
+      .search-form button {
+        background: var(--accent);
+        color: white;
+        border: none;
+        padding: 0 1.5rem;
+        border-radius: 0 4px 4px 0;
+        cursor: pointer;
+      }
+      .search-results {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+      .result-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--box-shadow);
+        transition: transform 0.3s ease;
+      }
+      .result-card:hover {
+        transform: translateY(-5px);
+      }
+      .result-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+      }
+      .result-card .content {
+        padding: 1.5rem;
+      }
+      .result-card .type {
+        display: inline-block;
+        background: #f0f0f0;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-bottom: 0.8rem;
+      }
+      .result-card h2 {
+        margin: 0 0 0.8rem 0;
+        font-size: 1.3rem;
+      }
+      .result-card p {
+        color: #666;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+      }
+      .result-card a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .no-results {
+        text-align: center;
+        padding: 3rem;
+        background: #f9f9f9;
+        border-radius: 12px;
+      }
+      .no-results h2 {
+        margin-bottom: 1rem;
+        color: #666;
+      }
+      .no-results p {
+        margin-bottom: 1.5rem;
+      }
+      .no-results .suggestions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+      .no-results .suggestions a {
+        background: #eee;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        color: #333;
+        text-decoration: none;
+      }
+      .debug-info {
+        margin-top: 2rem;
+        padding: 1rem;
+        background: #f5f5f5;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <Header />
+    <main>
+      <div class="search-header">
+        <h1>搜索结果</h1>
+        <p>搜索关键词: "{searchQuery}"</p>
+      </div>
+      
+      <form class="search-form" action="/search" method="get">
+        <input type="text" name="q" value={searchQuery} placeholder="输入关键词搜索..." />
+        <button type="submit">搜索</button>
+      </form>
+
+      {searchQuery ? (
+        searchResults.length > 0 ? (
+          <div class="search-results">
+            {searchResults.map(result => (
+              <div class="result-card">
+                {result.data.heroImage && (
+                  <img src={result.data.heroImage} alt={result.data.title} />
+                )}
+                <div class="content">
+                  <span class="type">{result.type}</span>
+                  <h2>{result.data.title}</h2>
+                  {result.data.description && <p>{result.data.description}</p>}
+                  <a href={`/${result.collection === 'blog' ? 'blog' : 
+                          result.collection === 'digitalReading' ? 'digital-reading' : 
+                          result.collection === 'education' ? 'education' : 
+                          result.collection === 'creative' ? 'creative' : 
+                          result.collection === 'software' ? 'software' : 
+                          result.collection}/${result.id}/`}>查看详情 →</a>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div class="no-results">
+            <h2>未找到相关内容</h2>
+            <p>抱歉，没有找到与 "{searchQuery}" 相关的内容。请尝试使用其他关键词，或浏览以下热门分类：</p>
+            <div class="suggestions">
+              <a href="/blog">博客文章</a>
+              <a href="/digital-reading">数字阅读</a>
+              <a href="/education">教育赋能</a>
+              <a href="/creative">创意素材</a>
+              <a href="/software">软件工坊</a>
+            </div>
+          </div>
+        )
+      ) : (
+        <div class="no-results">
+          <h2>请输入搜索关键词</h2>
+          <p>在上方搜索框中输入关键词，开始搜索网站内容。</p>
+        </div>
+      )}
+      
+      {/* 添加调试信息区域 */}
+      {import.meta.env.DEV && searchQuery && (
+        <div class="debug-info">
+          <h3>调试信息</h3>
+          <p>搜索关键词: "{searchQuery}"</p>
+          <p>URL参数: {Astro.url.searchParams.toString()}</p>
+          <p>结果数量: {searchResults.length}</p>
+          <p>内容总数: {allContent.length}</p>
+        </div>
+      )}
+    </main>
+    <Footer />
+  </body>
+</html>
