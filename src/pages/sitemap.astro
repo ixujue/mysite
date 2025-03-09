@@ -1,0 +1,315 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { getCollection } from 'astro:content';
+
+// 获取所有内容集合
+const blogPosts = await getCollection('blog');
+const digitalReadingPosts = await getCollection('digitalReading');
+const educationPosts = await getCollection('education');
+const creativePosts = await getCollection('creative');
+const softwarePosts = await getCollection('software');
+
+// 获取所有标签
+const allTags = [...new Set(blogPosts.flatMap(post => post.data.tags || []))];
+
+// 网站结构定义
+const siteStructure = [
+  {
+    title: '首页',
+    url: '/',
+    description: '网站主页'
+  },
+  {
+    title: '数字阅读',
+    url: '/digital-reading',
+    description: '电子书、有声书等数字阅读资源',
+    children: [
+      { title: '科技前沿', url: '/digital-reading/tech', description: '最新科技类电子书' },
+      { title: '文学经典', url: '/digital-reading/literature', description: '经典文学作品电子书' },
+      { title: '学术专著', url: '/digital-reading/academic', description: '学术研究专著' },
+      { title: '外语学习', url: '/digital-reading/language', description: '语言学习有声书' },
+      { title: '名著朗读', url: '/digital-reading/audiobook', description: '经典名著有声读物' }
+    ]
+  },
+  {
+    title: '教育赋能',
+    url: '/education',
+    description: '各类教育资源和学习材料',
+    children: [
+      { title: '编程开发', url: '/education/programming', description: '编程和开发教程' },
+      { title: '设计创作', url: '/education/design', description: '设计和创意课程' },
+      { title: '职业技能', url: '/education/career', description: '职业技能提升' },
+      { title: '考试认证', url: '/education/certification', description: '各类考试和认证资源' },
+      { title: '语言学习', url: '/education/language', description: '语言学习资源' }
+    ]
+  },
+  {
+    title: '创意素材',
+    url: '/creative',
+    description: '设计和创意素材资源',
+    children: [
+      { title: 'UI套件', url: '/creative/ui-kits', description: 'UI设计套件和模板' },
+      { title: '摄影图库', url: '/creative/photography', description: '高质量摄影素材' },
+      { title: '矢量插画', url: '/creative/illustrations', description: '矢量图形和插画' },
+      { title: '音效素材', url: '/creative/audio', description: '音效和音乐素材' },
+      { title: '视频模板', url: '/creative/video', description: '视频模板和素材' }
+    ]
+  },
+  {
+    title: '软件工具',
+    url: '/software',
+    description: '实用软件和工具推荐',
+    children: [
+      { title: '开发工具', url: '/software/dev-tools', description: '开发者工具和软件' },
+      { title: '设计软件', url: '/software/design-tools', description: '设计相关软件' },
+      { title: '办公应用', url: '/software/office', description: '办公效率应用' },
+      { title: '系统工具', url: '/software/system', description: '系统优化工具' },
+      { title: '多媒体', url: '/software/multimedia', description: '多媒体处理软件' }
+    ]
+  },
+  {
+    title: '博客',
+    url: '/blog',
+    description: '博客文章和分享'
+  },
+  {
+    title: '标签',
+    url: '/tags',
+    description: '按标签浏览内容'
+  },
+  {
+    title: '关于',
+    url: '/about',
+    description: '关于网站和作者'
+  }
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`网站地图 | ${SITE_TITLE}`} description="完整的网站结构和内容导航" />
+		<style>
+			main {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 2rem;
+			}
+			.sitemap-header {
+				margin-bottom: 3rem;
+				text-align: center;
+			}
+			.sitemap-header h1 {
+				font-size: 2.5rem;
+				margin-bottom: 1rem;
+			}
+			.sitemap-header p {
+				color: #666;
+				max-width: 800px;
+				margin: 0 auto;
+			}
+			.sitemap-section {
+				margin-bottom: 3rem;
+			}
+			.sitemap-section h2 {
+				font-size: 1.8rem;
+				margin-bottom: 1.5rem;
+				padding-bottom: 0.5rem;
+				border-bottom: 1px solid #eee;
+			}
+			.sitemap-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+				gap: 2rem;
+			}
+			.sitemap-item {
+				background: #f9f9f9;
+				border-radius: 8px;
+				padding: 1.5rem;
+				transition: all 0.3s ease;
+			}
+			.sitemap-item:hover {
+				box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+				transform: translateY(-5px);
+			}
+			.sitemap-item h3 {
+				font-size: 1.3rem;
+				margin-bottom: 0.5rem;
+			}
+			.sitemap-item p {
+				color: #666;
+				margin-bottom: 1rem;
+				font-size: 0.9rem;
+			}
+			.sitemap-item a {
+				color: #0066cc;
+				text-decoration: none;
+			}
+			.sitemap-item a:hover {
+				text-decoration: underline;
+			}
+			.sitemap-item ul {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+			}
+			.sitemap-item ul li {
+				margin-bottom: 0.5rem;
+				padding-left: 1rem;
+				position: relative;
+			}
+			.sitemap-item ul li::before {
+				content: "→";
+				position: absolute;
+				left: 0;
+				color: #999;
+			}
+			.tag-cloud {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+			}
+			.tag-cloud a {
+				background: #eee;
+				padding: 0.3rem 0.8rem;
+				border-radius: 20px;
+				font-size: 0.9rem;
+				color: #333;
+				transition: all 0.2s ease;
+			}
+			.tag-cloud a:hover {
+				background: #0066cc;
+				color: white;
+				text-decoration: none;
+			}
+			.content-list {
+				margin-top: 1rem;
+			}
+			.content-list h4 {
+				font-size: 1.1rem;
+				margin-bottom: 0.5rem;
+			}
+			.content-list ul {
+				list-style: none;
+				padding: 0;
+				margin: 0 0 1.5rem 0;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<div class="sitemap-header">
+				<h1>网站地图</h1>
+				<p>通过这个页面，您可以浏览网站的完整结构和所有内容分类，快速找到您感兴趣的内容。</p>
+			</div>
+
+			<div class="sitemap-section">
+				<h2>主要栏目</h2>
+				<div class="sitemap-grid">
+					{siteStructure.map(section => (
+						<div class="sitemap-item">
+							<h3><a href={section.url}>{section.title}</a></h3>
+							<p>{section.description}</p>
+							{section.children && (
+								<ul>
+									{section.children.map(child => (
+										<li><a href={child.url}>{child.title}</a> - {child.description}</li>
+									))}
+								</ul>
+							)}
+						</div>
+					))}
+				</div>
+			</div>
+
+			<div class="sitemap-section">
+				<h2>内容分类</h2>
+				<div class="sitemap-grid">
+					<div class="sitemap-item">
+						<h3>博客文章</h3>
+						<p>最新的{blogPosts.length}篇博客文章</p>
+						<div class="content-list">
+							<h4>最新文章</h4>
+							<ul>
+								{blogPosts.slice(0, 5).map(post => (
+									<li><a href={`/blog/${post.id}/`}>{post.data.title}</a></li>
+								))}
+							</ul>
+							<a href="/blog/">查看全部博客文章 →</a>
+						</div>
+					</div>
+
+					<div class="sitemap-item">
+						<h3>数字阅读资源</h3>
+						<p>电子书、有声书等{digitalReadingPosts.length}个资源</p>
+						<div class="content-list">
+							<h4>热门资源</h4>
+							<ul>
+								{digitalReadingPosts.slice(0, 5).map(post => (
+									<li><a href={`/digital-reading/${post.id}/`}>{post.data.title}</a></li>
+								))}
+							</ul>
+							<a href="/digital-reading/">查看全部数字阅读资源 →</a>
+						</div>
+					</div>
+
+					<div class="sitemap-item">
+						<h3>教育赋能资源</h3>
+						<p>各类教育和学习资源{educationPosts.length}个</p>
+						<div class="content-list">
+							<h4>热门资源</h4>
+							<ul>
+								{educationPosts.slice(0, 5).map(post => (
+									<li><a href={`/education/${post.id}/`}>{post.data.title}</a></li>
+								))}
+							</ul>
+							<a href="/education/">查看全部教育赋能资源 →</a>
+						</div>
+					</div>
+
+					<div class="sitemap-item">
+						<h3>创意素材资源</h3>
+						<p>设计和创意素材{creativePosts.length}个</p>
+						<div class="content-list">
+							<h4>热门资源</h4>
+							<ul>
+								{creativePosts.slice(0, 5).map(post => (
+									<li><a href={`/creative/${post.id}/`}>{post.data.title}</a></li>
+								))}
+							</ul>
+							<a href="/creative/">查看全部创意素材 →</a>
+						</div>
+					</div>
+
+					<div class="sitemap-item">
+						<h3>软件工具资源</h3>
+						<p>实用软件和工具{softwarePosts.length}个</p>
+						<div class="content-list">
+							<h4>热门资源</h4>
+							<ul>
+								{softwarePosts.slice(0, 5).map(post => (
+									<li><a href={`/software/${post.id}/`}>{post.data.title}</a></li>
+								))}
+							</ul>
+							<a href="/software/">查看全部软件工具 →</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="sitemap-section">
+				<h2>标签云</h2>
+				<div class="tag-cloud">
+					{allTags.map(tag => (
+						<a href={`/tags/${tag}`}>#{tag}</a>
+					))}
+				</div>
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>
