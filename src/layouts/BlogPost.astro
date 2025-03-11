@@ -13,6 +13,8 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 <html lang="zh-CN">
   <head>
     <BaseHead title={title} description={description} />
+    <link rel="stylesheet" href="https://unpkg.com/valine/dist/Valine.min.css">
+    <script src="https://unpkg.com/valine/dist/Valine.min.js" defer></script>
     <style>
       main {
         width: calc(100% - 2em);
@@ -51,6 +53,81 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
       .last-updated-on {
         font-style: italic;
       }
+      
+      /* 评论区样式 */
+      #vcomments {
+        margin-top: 3em;
+        padding-top: 2em;
+        border-top: 1px solid rgba(var(--gray-light), 0.8);
+      }
+      #vcomments .vwrap {
+        border-radius: 8px;
+        border: 1px solid rgba(var(--gray-light), 0.8);
+        box-shadow: 0 2px 6px rgba(var(--gray), 15%);
+      }
+      #vcomments .vwrap .vheader .vinput {
+        border-radius: 4px;
+        border: 1px solid rgba(var(--gray-light), 0.8);
+      }
+      #vcomments .vwrap .vedit .vctrl span {
+        color: var(--accent);
+      }
+      #vcomments .vwrap .vcontrol .col.col-20 {
+        display: flex;
+        justify-content: flex-end;
+      }
+      #vcomments .vbtn {
+        border-radius: 4px;
+        background: var(--accent);
+        color: white;
+        border: none;
+      }
+      #vcomments .vbtn:hover {
+        background: var(--accent-dark);
+      }
+      #vcomments .vcards .vcard {
+        padding: 15px 0;
+        border-bottom: 1px dashed rgba(var(--gray-light), 0.8);
+      }
+      #vcomments .vcards .vcard .vh {
+        border-bottom: none;
+      }
+      #vcomments .vcards .vcard .vh .vmeta .vat {
+        color: var(--accent);
+      }
+      #vcomments .vcards .vcard .vcontent {
+        padding-top: 10px;
+      }
+      #vcomments .vcards .vcard .vhead .vnick {
+        color: rgb(var(--black));
+        font-weight: bold;
+      }
+      #vcomments .vcount {
+        font-size: 1.2em;
+        font-weight: 600;
+        margin-bottom: 1em;
+        color: rgb(var(--black));
+      }
+      #vcomments .vcount .vnum {
+        color: var(--accent);
+      }
+      
+      /* 评论区移动端适配 */
+      @media (max-width: 720px) {
+        #vcomments .vwrap .vheader {
+          flex-direction: column;
+        }
+        #vcomments .vwrap .vheader .vinput {
+          width: 100%;
+          margin-bottom: 10px;
+        }
+        #vcomments .vwrap .vedit .vctrl {
+          margin-top: 10px;
+        }
+        #vcomments .vwrap .vcontrol .col.col-20 {
+          margin-top: 10px;
+        }
+      }
     </style>
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
@@ -77,10 +154,124 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
             <hr />
           </div>
           <slot />
+          <div id="vcomments"></div>
         </div>
       </article>
     </main>
     <Footer />
+    <script is:inline>
+      let retryCount = 0;
+      const maxRetries = 5;
+      const retryInterval = 1500;
+
+      // 从localStorage获取评论者信息
+      function getCommentInfo() {
+        try {
+          return {
+            nick: localStorage.getItem('valine-nick') || '',
+            mail: localStorage.getItem('valine-mail') || '',
+            link: localStorage.getItem('valine-link') || ''
+          };
+        } catch (e) {
+          console.error('获取评论者信息失败:', e);
+          return { nick: '', mail: '', link: '' };
+        }
+      }
+
+      // 保存评论者信息到localStorage
+      function saveCommentInfo() {
+        try {
+          const inputs = document.querySelectorAll('.vinput');
+          if (inputs && inputs.length >= 2) {
+            const nick = inputs[0].value.trim();
+            const mail = inputs[1].value.trim();
+            const link = inputs.length > 2 ? inputs[2].value.trim() : '';
+            
+            if (nick) localStorage.setItem('valine-nick', nick);
+            if (mail) localStorage.setItem('valine-mail', mail);
+            if (link) localStorage.setItem('valine-link', link);
+          }
+        } catch (e) {
+          console.error('保存评论者信息失败:', e);
+        }
+      }
+
+      // 监听评论提交事件
+      function listenForCommentSubmit() {
+        try {
+          const submitBtn = document.querySelector('.vsubmit.vbtn');
+          if (submitBtn) {
+            submitBtn.addEventListener('click', saveCommentInfo);
+          }
+        } catch (e) {
+          console.error('监听评论提交事件失败:', e);
+        }
+      }
+
+      function initValine() {
+        console.log('尝试初始化Valine评论系统...');
+        if (typeof Valine !== 'undefined') {
+          try {
+            // 获取已保存的评论者信息
+            const commentInfo = getCommentInfo();
+            
+            new Valine({
+              el: '#vcomments',
+              appId: 'iMjV8Ichz2un3Xa87h3ewUTr-gzGzoHsz',
+              appKey: 'iUCruslBAiy8hPD5B0GQ5FNp',
+              placeholder: '欢迎留下您的评论...',
+              avatar: 'retro',
+              meta: ['nick', 'mail', 'link'],
+              pageSize: 10,
+              lang: 'zh-CN',
+              visitor: true,  // 启用文章访问量统计
+              highlight: true,
+              recordIP: false,
+              serverURLs: 'https://imjv8ich.lc-cn-n1-shared.com',
+              // 设置已保存的评论者信息
+              path: window.location.pathname,
+              enableQQ: true,  // 启用QQ头像
+              requiredFields: ['nick', 'mail'],  // 设置必填项
+            });
+            
+            console.log('Valine 评论系统初始化成功');
+            document.getElementById('vcomments').innerHTML += '<div class="init-success" style="display:none;">评论系统加载成功</div>';
+            
+            // 填充已保存的评论者信息
+            setTimeout(() => {
+              const inputs = document.querySelectorAll('.vinput');
+              if (inputs && inputs.length >= 2) {
+                if (commentInfo.nick) inputs[0].value = commentInfo.nick;
+                if (commentInfo.mail) inputs[1].value = commentInfo.mail;
+                if (commentInfo.link && inputs.length > 2) inputs[2].value = commentInfo.link;
+              }
+              
+              // 监听评论提交事件
+              listenForCommentSubmit();
+            }, 1000);
+            
+          } catch (error) {
+            console.error('Valine 初始化失败:', error);
+            document.getElementById('vcomments').innerHTML = '<div class="valine-error">评论系统加载失败，请刷新页面重试</div>';
+          }
+        } else if (retryCount < maxRetries) {
+          console.log(`Valine 未加载，第 ${retryCount + 1} 次重试...`);
+          retryCount++;
+          setTimeout(initValine, retryInterval);
+        } else {
+          console.error('Valine 加载失败，已达到最大重试次数');
+          document.getElementById('vcomments').innerHTML = '<div class="valine-error">评论系统加载失败，请刷新页面重试</div>';
+        }
+      }
+
+      // 在页面加载完成后初始化Valine
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initValine);
+      } else {
+        // 如果DOM已经加载完成，直接初始化
+        initValine();
+      }
+    </script>
   </body>
   <script>
     if (window.netlifyIdentity) {

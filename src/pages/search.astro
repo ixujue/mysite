@@ -5,14 +5,16 @@ import Footer from '../components/Footer.astro';
 import { SITE_TITLE } from '../consts';
 import { getCollection } from 'astro:content';
 
-// 获取URL参数中的搜索关键词
-const { q } = Astro.url.searchParams;
-const searchQuery = q ? q.toString().trim() : '';
+// 从URL获取搜索查询参数
+const searchQuery = Astro.url.searchParams.get('q') || '';
 
-// 调试输出 - 检查URL参数
-console.log('URL参数:', Astro.url.searchParams.toString());
-console.log('原始搜索关键词:', q);
-console.log('处理后的搜索关键词:', searchQuery);
+// 调试输出
+console.log('服务器端渲染，初始搜索关键词:', searchQuery);
+
+// 调试输出 - 检查URL的完整信息
+console.log('完整URL:', Astro.url.toString());
+console.log('查询字符串:', Astro.url.search);
+console.log('搜索关键词:', searchQuery);
 
 // 获取所有内容集合
 const blogPosts = await getCollection('blog');
@@ -45,7 +47,12 @@ if (searchQuery) {
     const excerptMatch = item.data.excerpt && typeof item.data.excerpt === 'string' && item.data.excerpt.toLowerCase().includes(lowerQuery);
     const tagsMatch = item.data.tags && Array.isArray(item.data.tags) && item.data.tags.some(tag => tag.toLowerCase().includes(lowerQuery));
     
-    const isMatch = titleMatch || descMatch || bodyMatch || contentMatch || excerptMatch || tagsMatch;
+    // 搜索原始内容（包括MDX文件名和路径）
+    const idMatch = item.id && item.id.toLowerCase().includes(lowerQuery);
+    const collectionMatch = item.collection && item.collection.toLowerCase().includes(lowerQuery);
+    const rawContentMatch = JSON.stringify(item).toLowerCase().includes(lowerQuery);
+    
+    const isMatch = titleMatch || descMatch || bodyMatch || contentMatch || excerptMatch || tagsMatch || idMatch || collectionMatch || rawContentMatch;
     
     // 详细记录每个内容项的匹配情况
     if (isMatch) {
@@ -57,7 +64,10 @@ if (searchQuery) {
         bodyMatch,
         contentMatch,
         excerptMatch,
-        tagsMatch
+        tagsMatch,
+        idMatch,
+        collectionMatch,
+        rawContentMatch
       });
     }
     
@@ -204,47 +214,85 @@ if (searchQuery) {
         <button type="submit">搜索</button>
       </form>
 
-      {searchQuery ? (
-        searchResults.length > 0 ? (
-          <div class="search-results">
-            {searchResults.map(result => (
-              <div class="result-card">
-                {result.data.heroImage && (
-                  <img src={result.data.heroImage} alt={result.data.title} />
-                )}
-                <div class="content">
-                  <span class="type">{result.type}</span>
-                  <h2>{result.data.title}</h2>
-                  {result.data.description && <p>{result.data.description}</p>}
-                  <a href={`/${result.collection === 'blog' ? 'blog' : 
-                          result.collection === 'digitalReading' ? 'digital-reading' : 
-                          result.collection === 'education' ? 'education' : 
-                          result.collection === 'creative' ? 'creative' : 
-                          result.collection === 'software' ? 'software' : 
-                          result.collection}/${result.id}/`}>查看详情 →</a>
+      <div id="search-results-container">
+        <div class="no-results">
+          <h2>正在加载搜索结果...</h2>
+          <p>请稍候，系统正在处理您的搜索请求。</p>
+        </div>
+      </div>
+      
+      <script define:vars={{ searchResults, searchQuery }}>        
+        // 客户端JavaScript，在页面加载后执行
+        document.addEventListener('DOMContentLoaded', function() {
+          // 从URL获取搜索查询参数，确保客户端和服务器端使用相同的查询参数
+          const urlParams = new URLSearchParams(window.location.search);
+          const clientSearchQuery = urlParams.get('q') || '';
+          
+          console.log('客户端脚本执行，URL参数获取的搜索关键词:', clientSearchQuery);
+          console.log('客户端脚本执行，服务器传递的搜索关键词:', searchQuery);
+          console.log('客户端脚本执行，搜索结果数量:', searchResults ? searchResults.length : 0);
+          
+          // 确保使用URL中的搜索关键词，而不是服务器变量
+          const finalSearchQuery = clientSearchQuery || searchQuery;
+          
+          // 更新页面标题和搜索框
+          document.querySelector('.search-header p').textContent = `搜索关键词: "${finalSearchQuery}"`;
+          document.querySelector('input[name="q"]').value = finalSearchQuery;
+          
+          // 如果没有搜索关键词，显示提示信息
+          if (!finalSearchQuery) {
+            document.getElementById('search-results-container').innerHTML = `
+              <div class="no-results">
+                <h2>请输入搜索关键词</h2>
+                <p>在上方搜索框中输入关键词，开始搜索网站内容。</p>
+              </div>
+            `;
+            return;
+          }
+          
+          // 使用服务器端传递的搜索结果
+          if (searchResults && searchResults.length > 0) {
+            // 有搜索结果，显示结果列表
+            let resultsHTML = '<div class="search-results">';
+            
+            searchResults.forEach(result => {
+              const heroImage = result.data.heroImage || '/blog-placeholder-1.jpg';
+              const description = result.data.description || '无描述';
+              const url = `/${result.collection}/${result.id}/`;
+              
+              resultsHTML += `
+                <div class="result-card">
+                  <img src="${heroImage}" alt="${result.data.title}" />
+                  <div class="content">
+                    <span class="type">${result.type}</span>
+                    <h2>${result.data.title}</h2>
+                    <p>${description}</p>
+                    <a href="${url}">查看详情 →</a>
+                  </div>
+                </div>
+              `;
+            });
+            
+            resultsHTML += '</div>';
+            document.getElementById('search-results-container').innerHTML = resultsHTML;
+          } else {
+            // 没有搜索结果，显示提示信息
+            document.getElementById('search-results-container').innerHTML = `
+              <div class="no-results">
+                <h2>未找到相关内容</h2>
+                <p>抱歉，没有找到与 "${searchQuery}" 相关的内容。请尝试使用其他关键词，或浏览以下热门分类：</p>
+                <div class="suggestions">
+                  <a href="/blog">博客文章</a>
+                  <a href="/digital-reading">数字阅读</a>
+                  <a href="/education">教育赋能</a>
+                  <a href="/creative">创意素材</a>
+                  <a href="/software">软件工坊</a>
                 </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div class="no-results">
-            <h2>未找到相关内容</h2>
-            <p>抱歉，没有找到与 "{searchQuery}" 相关的内容。请尝试使用其他关键词，或浏览以下热门分类：</p>
-            <div class="suggestions">
-              <a href="/blog">博客文章</a>
-              <a href="/digital-reading">数字阅读</a>
-              <a href="/education">教育赋能</a>
-              <a href="/creative">创意素材</a>
-              <a href="/software">软件工坊</a>
-            </div>
-          </div>
-        )
-      ) : (
-        <div class="no-results">
-          <h2>请输入搜索关键词</h2>
-          <p>在上方搜索框中输入关键词，开始搜索网站内容。</p>
-        </div>
-      )}
+            `;
+          }
+        });
+      </script>
       
       {/* 添加调试信息区域 */}
       {import.meta.env.DEV && searchQuery && (
@@ -254,6 +302,7 @@ if (searchQuery) {
           <p>URL参数: {Astro.url.searchParams.toString()}</p>
           <p>结果数量: {searchResults.length}</p>
           <p>内容总数: {allContent.length}</p>
+          <p>搜索范围: 标题、描述、内容、标签、ID、集合名称和原始内容</p>
         </div>
       )}
     </main>

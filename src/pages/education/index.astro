@@ -6,9 +6,9 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import { getCollection } from 'astro:content';
 import FormattedDate from '../../components/FormattedDate.astro';
 
-const posts = (await getCollection('blog')).sort(
+const courses = (await getCollection('education')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-).filter(post => post.data.categories?.includes('education'));
+);
 
 const categories = [
   { name: '编程开发', slug: 'programming' },
@@ -41,15 +41,17 @@ const categories = [
 			<section class="featured-courses">
 				<h2>精选课程</h2>
 				<div class="course-grid">
-					{posts.slice(0, 6).map((post) => (
+					{courses.slice(0, 6).map((course) => (
 						<div class="course-card">
-							<a href={`/blog/${post.id}/`}>
-								<img src={post.data.heroImage} alt={post.data.title} />
+							<a href={`/education/${course.id}/`}>
+								<img src={course.data.heroImage} alt={course.data.title} />
 								<div class="course-info">
-									<h3>{post.data.title}</h3>
-									<p class="description">{post.data.description}</p>
+									<h3>{course.data.title}</h3>
+									<p class="description">{course.data.description}</p>
 									<div class="meta">
-										<span class="date"><FormattedDate date={post.data.pubDate} /></span>
+										<span class="level">{course.data.level || '所有级别'}</span>
+										<span class="date"><FormattedDate date={course.data.pubDate} /></span>
+										{course.data.instructor && <span class="instructor">讲师: {course.data.instructor}</span>}
 									</div>
 								</div>
 							</a>
@@ -131,6 +133,14 @@ const categories = [
 			@media (max-width: 768px) {
 				.course-grid {
 					grid-template-columns: 1fr;
+				}
+				.category-nav {
+					flex-direction: column;
+					gap: 0.5em;
+				}
+				.category-link {
+					width: 100%;
+					text-align: center;
 				}
 			}
 		</style>

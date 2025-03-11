@@ -1,0 +1,227 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../../components/FormattedDate.astro';
+
+// 获取教育内容集合并按发布日期排序
+const allCourses = await getCollection('education');
+
+// 筛选编程开发类别的课程
+const courses = allCourses
+  .filter(course => course.data.categories?.includes('programming'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// 所有教育分类
+const categories = [
+  { name: '编程开发', slug: 'programming', active: true },
+  { name: '设计创作', slug: 'design', active: false },
+  { name: '职业技能', slug: 'career', active: false },
+  { name: '考试认证', slug: 'certification', active: false },
+  { name: '语言学习', slug: 'language', active: false }
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title="编程开发课程 | 教育赋能 | {SITE_TITLE}" description="探索最新的编程开发课程和学习资源，提升您的技术能力" />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="category-header">
+				<h1>编程开发课程</h1>
+				<p class="category-description">探索最新的编程语言、框架和开发工具的学习资源，从入门到精通</p>
+				<div class="category-nav">
+					{categories.map(category => (
+						<a href={`/education/${category.slug}`} class={`category-link ${category.active ? 'active' : ''}`}>
+							{category.name}
+						</a>
+					))}
+				</div>
+			</section>
+
+			{courses.length > 0 ? (
+				<section class="courses-section">
+					<div class="course-filters">
+						<div class="filter-group">
+							<label>难度级别:</label>
+							<div class="filter-options">
+								<a href="?level=all" class="filter-option active">全部</a>
+								<a href="?level=入门" class="filter-option">入门</a>
+								<a href="?level=中级" class="filter-option">中级</a>
+								<a href="?level=高级" class="filter-option">高级</a>
+							</div>
+						</div>
+						<div class="filter-group">
+							<label>排序方式:</label>
+							<div class="filter-options">
+								<a href="?sort=newest" class="filter-option active">最新发布</a>
+								<a href="?sort=popular" class="filter-option">最受欢迎</a>
+							</div>
+						</div>
+					</div>
+
+					<div class="course-grid">
+						{courses.map((course) => (
+							<div class="course-card">
+								<a href={`/education/${course.id}/`}>
+									<div class="course-badge">{course.data.level || '所有级别'}</div>
+									<img src={course.data.heroImage || '/blog-placeholder-3.jpg'} alt={course.data.title} />
+									<div class="course-info">
+										<h3>{course.data.title}</h3>
+										<p class="description">{course.data.description}</p>
+										<div class="meta">
+											{course.data.instructor && <span class="instructor">讲师: {course.data.instructor}</span>}
+											{course.data.duration && <span class="duration">时长: {course.data.duration}</span>}
+											<span class="date">发布于: <FormattedDate date={course.data.pubDate} /></span>
+										</div>
+									</div>
+								</a>
+							</div>
+						))}
+					</div>
+				</section>
+			) : (
+				<div class="no-courses">
+					<h2>暂无编程开发课程</h2>
+					<p>我们正在努力添加更多编程开发相关的课程和资源，请稍后再来查看。</p>
+					<a href="/education/" class="back-link">返回教育赋能主页</a>
+				</div>
+			)}
+		</main>
+		<style>
+			main {
+				width: 100%;
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 3em 1em;
+			}
+			.category-header {
+				text-align: center;
+				margin-bottom: 3em;
+			}
+			.category-description {
+				max-width: 800px;
+				margin: 0 auto 1.5em;
+				color: rgb(var(--gray));
+			}
+			.category-nav {
+				display: flex;
+				justify-content: center;
+				flex-wrap: wrap;
+				gap: 1em;
+				margin-top: 1em;
+			}
+			.category-link {
+				padding: 0.5em 1em;
+				border-radius: 8px;
+				background: #f4f4f4;
+				color: #666;
+				text-decoration: none;
+				transition: all 0.2s ease;
+			}
+			.category-link:hover {
+				background: #333;
+				color: #fff;
+			}
+			.category-link.active {
+				background: #333;
+				color: #fff;
+			}
+			.course-filters {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: space-between;
+				margin-bottom: 2em;
+				padding: 1em;
+				background: #f9f9f9;
+				border-radius: 8px;
+			}
+			.filter-group {
+				display: flex;
+				align-items: center;
+				gap: 1em;
+				margin: 0.5em 0;
+			}
+			.filter-options {
+				display: flex;
+				gap: 0.5em;
+			}
+			.filter-option {
+				padding: 0.3em 0.8em;
+				border-radius: 4px;
+				background: #eee;
+				color: #666;
+				text-decoration: none;
+				font-size: 0.9em;
+			}
+			.filter-option.active {
+				background: #007bff;
+				color: white;
+			}
+			.course-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+				gap: 2em;
+				margin-top: 1em;
+			}
+			.course-card {
+				border-radius: 12px;
+				overflow: hidden;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+				transition: transform 0.3s ease;
+				position: relative;
+			}
+			.course-card:hover {
+				transform: translateY(-5px);
+			}
+			.course-badge {
+				position: absolute;
+				top: 10px;
+				right: 10px;
+				padding: 0.3em 0.8em;
+				border-radius: 4px;
+				background: rgba(0, 0, 0, 0.7);
+				color: white;
+				font-size: 0.8em;
+			}
+			.course-card img {
+				width: 100%;
+				height: 200px;
+				object-fit: cover;
+			}
+			.course-info {
+				padding: 1em;
+			}
+			.course-info h3 {
+				margin: 0;
+				font-size: 1.2em;
+				color: rgb(var(--black));
+			}
+			.description {
+				margin: 0.5em 0;
+				font-size: 0.9em;
+				color: rgb(var(--gray));
+				display: -webkit-box;
+				-webkit-line-clamp: 3;
+				-webkit-box-orient: vertical;
+				overflow: hidden;
+			}
+			.meta {
+				margin-top: 1em;
+				font-size: 0.8em;
+				color: rgb(var(--gray));
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.8em;
+			}
+			.no-courses {
+				text-align: center;
+				padding: 3em 1em;
+				background: #f9f9f9;
+				border-radius: 8px;
+			}
